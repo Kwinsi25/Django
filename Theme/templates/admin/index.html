@@ -1,0 +1,72 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% load static %}
+{% block extrastyle %}
+    <!-- Navbar -->
+    
+     {% block content %}
+     <body class="hold-transition sidebar-mini layout-fixed">
+      <div class="wrapper">
+      
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+          <img class="animation__shake" src="{% static '/images/AdminLTELogo.png' %}" alt="AdminLTELogo" height="60" width="60">
+        </div>
+      
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+          <!-- Content Header (Page header) -->
+          <div class="content-header">
+            <div class="container-fluid">
+              <div class="row mb-2">
+                <div class="col-sm-6">
+                  <h1 class="m-0">Dashboard</h1>
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+              <div class="row mb-2">
+                <div class="col-sm-12">
+                  {% block sidebar %}
+                  <h5>{% translate 'Recent actions' %}</h5>
+                  {% load log %}
+                        {% get_admin_log 10 as admin_log for_user user %}
+                        {% if not admin_log %}
+                          <p>{% translate 'None available' %}</p>
+                        {% else %}
+                        <ol class="actionlist">
+                          {% for entry in admin_log %}
+                          <li style="  list-style-type: none;"  class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                              {% if entry.is_deletion or not entry.get_admin_url %}
+                                <i class="fa fa-trash" style="color: red;"></i>&nbsp;{{ entry.object_repr }}
+                              {% else %}
+                                  <i class="fa fa-edit" style="color: green;"></i>&nbsp;<a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                              {% endif %}
+                              <br>
+                              {% if entry.content_type %}
+                                  <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                              {% else %}
+                              <i class="fa fa-plus"></i><span class="mini quiet">{% translate 'Unknown content' %}</span>
+                              {% endif %}
+                          </li>
+                          <br>
+                          {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endblock %}
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+          </div>
+          <!-- /.content-header -->
+      
+        </div>
+        <!-- /.content-wrapper -->
+        
+     {% endblock %}
+     
+  
+  
+  <!-- ./wrapper -->
+  </div>
+</body>
+{% endblock %}

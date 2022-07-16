@@ -1,0 +1,292 @@
+
+{% load static %}
+
+<style>
+  .treeview-animated {
+
+font-size: 16px;
+font-weight: 400;
+
+background-color:white;
+}
+
+
+
+.treeview-animated {
+width: 20rem;
+
+}
+
+.treeview-animated h6 {
+font-size: 1.4em;
+font-weight: 500;
+color: #4b545c !important;
+}
+
+.treeview-animated ul {
+position: relative;
+list-style: none;
+padding-left: 0;
+}
+
+.treeview-animated-list ul {
+padding-left: 1em;
+margin-top: 0.1em;
+background-color:white !important;
+}
+
+.treeview-animated-element {
+padding: 0.2em 0.2em 0.2em 1em;
+cursor: pointer;
+transition: all .1s linear;
+border: 2px solid transparent;
+border-right: 0px solid transparent;
+}
+
+
+
+.treeview-animated-items-header {
+display: block;
+padding: 0.4em;
+margin-right: 0;
+border-bottom: 2px solid transparent;
+}
+
+
+.treeview-animated-items-header:hover {
+background-color: #4b545c !important
+}
+
+.treeview-animated-items-header.open {
+transition: all .1s linear;
+background-color: #4b545c !important;
+
+border-bottom: 2px solid #ffac47;
+}
+
+.treeview-animated-items-header.open span {
+color: #ffac47;
+}
+
+.treeview-animated-items-header.open:hover {
+
+color: #ffac47;
+background-color: #4b545c !important;
+}
+
+.treeview-animated-items-header.open div:hover {
+background-color: #4b545c !important;
+}
+
+.treeview-animated-items-header .fa-angle-right {
+transition: all .1s linear;
+font-size: .8rem;
+}
+
+.treeview-animated-items-header .fa {
+position: relative;
+transition: all .2s linear;
+transform: rotate(90deg);
+
+color: #ffac47;
+}
+
+.treeview-animated-items-header .fa-minus-circle {
+position: relative;
+color: #ffac47;
+transform: rotate(180deg);
+}
+
+[data-letters]:before {
+  content:attr(data-letters);
+  display:inline-block;
+  font-size:1em;
+  width:1.5em;
+  height:1.5em;
+  line-height:1.5em;
+  text-align:center;
+  border-radius:50%;
+  background-color: #ffac47;
+  color: #4b545c;
+  margin-right:1em;
+  }
+</style>
+{% if app_list %}
+{% for app in app_list %}
+<aside class="main-sidebar sidebar-dark-primary elevation-4 header" >
+    <!-- Brand Logo -->
+    <div style="background-color: #4b545c;">
+    <a href="#" class="brand-link">
+      <img src="{% static '/images/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-dark" style="color: white;">AdminLTE 3</span>
+    </a>
+    </div>
+    <!-- Sidebar -->
+    <div class="sidebar" >
+      <!-- Sidebar user panel (optional) -->
+      
+    
+      <!-- Sidebar Menu -->
+        <!-- customer -->
+        <div class="treeview-animated">
+          <ul class="treeview-animated-list mb-3">
+            <!-- authentication -->
+            <li class="treeview-animated-items">
+              <a class="treeview-animated-items-header">
+                <i class="fa fa-plus-circle"></i>
+                <span class="mx-4 my-4">Authentication</span>
+              </a>
+              <ul class="nested">
+                <!-- group -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4" data-letters="G">Groups</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><i class="fa fa-users mx-2"></i><a href="/admin/auth/group"> Groups</a></div>
+                    </li>
+                  </ul>
+                </li>
+                <!-- user -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4 " data-letters="U">User</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><i class="fa fa-user mx-2" ></i><a  href="/admin/auth/user" > User</a></div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <!-- customer -->
+            <li class="treeview-animated-items">
+              <a class="treeview-animated-items-header">
+                <i class="fa fa-plus-circle"></i>
+                <span class="mx-4 my-4">Customer</span>
+              </a>
+              <ul class="nested">
+                <!-- attribute -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4" data-letters="C">Customer</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><i class="fa fa-user mx-2"></i><a href="/admin/Customer/customer"> Customers</a></div>
+                    </li>
+                  </ul>
+                </li>
+                <!-- language -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4 " data-letters="G">Group</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><i class="fa fa-book mx-2" ></i><a  href="/admin/Customer/customergroup" > Customer Group</a></div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+        <!-- cms -->
+            <li class="treeview-animated-items">
+              <a class="treeview-animated-items-header">
+                <i class="fa fa-plus-circle"></i>
+                <span class="mx-4 my-4">CMS</span>
+              </a>
+              <ul class="nested">
+                <!-- banner -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4 " data-letters="B">Banner</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><i class="fa fa-picture-o mx-2" ></i><a  href="/admin/Banner/banner" > Banner</a></div>
+                    </li>
+                    <li>
+                      <div class="treeview-animated-element mx-4"><img src="{% static '/images/burst.png' %}" alt="fjvfjj" height="17.16" width="17.16" class="mx-2"><a  href="/admin/Banner/bannergroup" > Banner Group</a></div>
+                    </li>
+                  </ul>
+                </li>
+                <!-- block -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4" data-letters="B">Block</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><i class="fa fa-square mx-2"></i><a href="/admin/Block/block"> Blocks</a></div>
+                    </li>
+                  </ul>
+                </li>
+                <!-- banner group -->
+                <!-- <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4 " data-letters="G">Group</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><img src="{% static '/images/burst.png' %}" alt="fjvfjj" height="17.16" width="17.16" class="mx-2"><a  href="/admin/Banners/bannergroups" > Banner Group</a></div>
+                    </li>
+                  </ul>
+                </li> -->
+                <!-- page -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4 " data-letters="P">Page</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><i class="fa fa-book mx-2" ></i><a  href="/admin/Page/page" > Pages</a></div>
+                    </li>
+                  </ul>
+                </li>
+                
+              </ul>
+            </li>
+        <!-- system -->
+            <li class="treeview-animated-items">
+              <a class="treeview-animated-items-header">
+                <i class="fa fa-plus-circle"></i>
+                <span class="mx-4 my-4">System</span>
+              </a>
+              <ul class="nested">
+                <!-- attribute -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4" data-letters="A">Attribute</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><img src="{% static '/images/application.png' %}" alt="fjvfjj" height="13.72" width="16" class="mx-2"><a href="/admin/Attribute/attribute"> Attribute</a></div>
+                    </li>
+                  </ul>
+                </li>
+                <!-- language -->
+                <li class="treeview-animated-items">
+                  <a class="treeview-animated-items-header">
+                    <i class="fa fa-plus-circle"></i>
+                    <span class="mx-4 my-4 " data-letters="L">Language</span></a>
+                  <ul class="nested">
+                    <li>
+                      <div class="treeview-animated-element mx-4"><i class="fa fa-language mx-2" ></i><a  href="/admin/Language/language" > Language</a></div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+  
+{% endfor %}
+{% endif %}

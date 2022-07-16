@@ -1,0 +1,615 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% load i18n admin_urls static admin_modify %}
+{% block extrahead %}
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">  
+      <script src="https://code.jquery.com/jquery-1.10.2.js"></script>  
+      <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script> 
+      
+ 
+{% endblock %}
+
+{% block content %}
+<style>
+  .error{
+    color: red;
+  }
+  #password-strength-status,#message {
+                padding: 5px 10px;
+                border-radius: 4px;
+                margin-top: 5px;
+            }
+
+            .medium-password {
+                color: #b7d60a;
+            }
+
+            .weak-password {
+                color: #ce1d14;
+            }
+
+            .strong-password {
+                color: #12CC1A;
+            }
+
+</style>
+<script>
+  var check = function() {
+      if (document.getElementById('password').value ==
+        document.getElementById('confirmPassword').value) {
+        document.getElementById('message').style.color = 'green';
+        document.getElementById('message').innerHTML = 'Matching';
+      } else {
+        document.getElementById('message').style.color = 'red';
+        document.getElementById('message').innerHTML = 'Not matching';
+      }
+    }
+  function addTotargetGroup(user, ctrl) {
+        ctrl.setAttribute('enabled', true);
+  }
+  function body() {
+        $("#addressCard").hide()
+      }
+      function tab2() {
+        $("#addressCard").hide()
+      }
+      function tab3() {
+        $("#addressCard").show()
+      }
+</script>
+<body class="hold-transition sidebar-mini" onload="body()">
+  <div class="wrapper">
+    <!-- Content Wrapper. Contains page content -->
+    {% if customerData is None and addressData is None %}
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+            {% for message in messages %}
+            <div class="alert alert-success">
+                <a class="close" href="#" data-dismiss="alert">×</a>
+                {{ message }}
+            </div>
+            {% endfor %}
+          <div class="row mb-2">
+            <div class="col-sm-12">
+              <ol class="breadcrumb float-sm-right">
+                  {% if not is_popup %}
+                  {% block breadcrumbs %}
+                  <div class="breadcrumbs">
+                  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+                  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+                  &rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+                  &rsaquo; {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+                  </div>
+                  {% endblock %}
+                  {% endif %}
+              </ol>
+            </div>
+            
+          </div>
+          <div class="row mb-2">
+              <div class="col-sm-12">
+                  {% block object-tools %}
+                  {% if change %}{% if not is_popup %}
+                  <ul class="object-tools" style="float: right;">
+                      {% block object-tools-items %}
+                      {% change_form_object_tools %}
+                      {% endblock %}
+                  </ul>
+                  {% endif %}{% endif %}
+                  {% endblock %}
+              </div>
+          </div>
+
+        </div>
+      </section>
+      <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="customerForm" novalidate >{% csrf_token %}
+        <section class="content">
+          <div class="container-fluid">
+              <div class="row">
+                  <!-- left column -->
+                  <div class="col-md-12">
+                      <!-- jquery validation -->
+                      <div class="row">
+                          <div class="card-body">
+                              <div class="card card-primary card-outline card-outline-tabs">
+                                  <div class="card-header p-0 border-bottom-0">
+                                      <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                          <li class="nav-item">
+                                              <a class="nav-link active" id="custom-tabs-four-home-tab"
+                                                  data-toggle="pill" href="#custom-tabs-four-home" role="tab"
+                                                  aria-controls="custom-tabs-four-home"
+                                                  aria-selected="true">Customer</a>
+                                          </li>
+                                          <li class="nav-item">
+                                              <a class="nav-link" id="custom-tabs-four-profile-tab"
+                                                  data-toggle="pill" href="#custom-tabs-four-profile" role="tab"
+                                                  aria-controls="custom-tabs-four-profile"
+                                                  aria-selected="false">Address</a>
+                                          </li>
+                                      </ul>
+                                  </div>
+                                  <!-- header -->
+                                  <div class="card-body">
+                                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                                        <div class="tab-pane fade show active" id="custom-tabs-four-home"
+                                            role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                            <div class="card-body">
+                                              <div class="row">
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="firstName">First Name:</label>
+                                                    <input type="text" class="form-control" id="firstName" name="firstName"  required>
+                                                  </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="lastName">Last Name:</label>
+                                                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="form-group">
+                                                
+                                                <label for="image">Profile Image:</label>
+                                                <input type="file"  class="form-control" id="image" name="image" onchange="Filevalidation()" required>
+                                              </div>
+                                              <div class="callout callout-warning">
+                                                <strong>Note</strong>
+                                                <li>Maximum size : 2 MB</li>
+                                                <li>Allowed file type : jpeg, jpg, png</li>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="email">Email:</label>
+                                                    <input type="email" class="form-control" id="email" name="email" required>
+                                                  </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="contactNo">Contact:</label>
+                                                    <input type="number" class="form-control" id="contactNo" name="contactNo" required>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="password">Password:</label>
+                                                    <input type="password" class="form-control" id="password" name="password" onkeyup='check();'required>
+                                                    <div id="password-strength-status"></div> 
+                                                  </div>
+                                                  
+                                                </div>
+
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="confirmPassword">Confirm Password:</label>
+                                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" onkeyup='check();' required>
+                                                    <div id='message'></div>
+                                                  </div>
+                                                </div>
+                                                
+                                              </div>
+                                              
+                                              <div class="row">
+                                                <div class="col-sm-3">
+                                                  <div class="form-group">
+                                                    <label for="emailVerified">Email Verified:</label><br>
+                                                    <input type="radio"  id="emailVerified" name="emailVerified" onclick="addTotargetGroup('user',this);" style="width: 20px;height: 20px;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: 0.25rem;box-shadow: inset 0 0 0 transparent;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">
+                                                    
+                                                  </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                  <div class="form-group">
+                                                    <label for="customerGroup">Customer Group:</label>
+                                                    <select name="group" id="group" class="form-control">
+                                                      <option value="">--------</option>
+                                                      {% for i in customerGroupData %}
+                                                      <option value="{{i.customerGroupId}}">{{i}}</option>
+                                                      {% endfor %}
+                                                    </select>
+                                                  </div>
+                                                </div>
+                                                <div class="col-sm-6">  
+                                                  <div class="form-group">
+                                                    <label for="status">Status:</label>
+                                                    <select name="status" id="status" class="form-control">
+                                                      <option value="enabled">Enabled</option>
+                                                      <option value="disabled">Disabled</option>
+                                                    </select>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <!-- customertab -->
+                                        <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel"
+                                                    aria-labelledby="custom-tabs-four-profile-tab">
+                                                    <div class="card-body">
+                                                      <div class="row">
+                                                        <div class="col-sm-12">
+                                                          <img id="addData" src="{% static 'images/add-button.png' %}" height="30px" width="30px" style="float: right;">
+                                                        </div>
+                                                      </div>
+                                                        <div class="card-body" id="optiontable">
+                                                            <div id="oprioncount[0]">
+                                                              <div class="row">
+                                                                <div class="col-sm-6">
+                                                                  <div class="form-group">
+                                                                    <label for="name">Address Type(Home/Office):</label>
+                                                                    <input type="text" class="form-control" id="option['0'][name]" name="option['0'][name]" required>
+                                                                  </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                  <div class="form-group">
+                                                                    <label for="houseNo">House No./ Building / Appartment:</label>
+                                                                    <input type="text" class="form-control" id="option['0'][houseNo]" name="option['0'][houseNo]" required>
+                                                                  </div>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-sm-12">
+                                                                  <div class="form-group">
+                                                                    <label for="streetAddress">Area / Street / Sector / Village:</label>
+                                                                    <input type="text" class="form-control" id="option['0'][streetAddress]" name="option['0'][streetAddress]" required>
+                                                                  </div>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-sm-6">
+                                                                  <div class="form-group">
+                                                                    <label for="landmark">Landmark:</label>
+                                                                    <input type="text" class="form-control" id="option['0'][landmark]" name="option['0'][landmark]" >
+                                                                  </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                  <div class="form-group">
+                                                                    <label for="postalCode">Pincode:</label>
+                                                                    <input type="number" class="form-control" id="option['0'][postalCode]" name="option['0'][postalCode]" required>
+                                                                  </div>
+                                                                </div>
+                                                              </div>
+                                                              <div class="row">
+                                                                <div class="col-sm-6">
+                                                                  <div class="form-group">
+                                                                    <label for="isDefault">Default:</label>
+                                                                    <input type="radio" class="radioUpdate" id="option['0'][isDefault]" name="option['0'][isDefault]" >
+                                                                  </div>
+                                                                </div>
+                                                                <div class="col-sm-6">
+                                                                  <input type="button" class="deleteAddress"  value="Delete" style="background-color: #dc3545;border:none;color:white;border-radius:5%;float: right;">
+                                                                </div>
+                                                              </div>
+                                                            </div>
+                                                            <!-- option row -->
+                                                        </div>
+                                                        <!-- option table -->
+                                                    </div>
+                                        </div>
+                                  </div>
+                                  </div>
+                              <!-- card body -->
+                              </div>
+                              <!-- card primary -->
+                          </div>
+                          <!-- card body -->
+                      </div>
+                      <!-- row -->
+                  </div>
+                  <!-- col -->
+                </div>
+                <!-- row -->
+          </div>
+          <!-- fluid -->
+        </section>
+        <div id="submitdiv">
+          {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+        </div>
+      </form>
+    </div>
+    <!-- content wrapper -->
+    {% else %}
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+            {% for message in messages %}
+            <div class="alert alert-success">
+                <a class="close" href="#" data-dismiss="alert">×</a>
+                {{ message }}
+            </div>
+            {% endfor %}
+          <div class="row mb-2">
+            <div class="col-sm-12">
+              <ol class="breadcrumb float-sm-right">
+                  {% if not is_popup %}
+                  
+                  <div class="breadcrumbs">
+                  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+                  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+                  &rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+                  &rsaquo; {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+                  </div>
+                  
+                  {% endif %}
+              </ol>
+            </div>
+            
+          </div>
+         
+
+        </div>
+      </section>
+      <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate >{% csrf_token %}
+        <section class="content">
+          <div class="container-fluid">
+              <div class="row">
+                  <!-- left column -->
+                  <div class="col-md-12">
+                      <!-- jquery validation -->
+                      <div class="row">
+                          <div class="card-body">
+                              <div class="card card-primary card-outline card-outline-tabs">
+                                  <div class="card-header p-0 border-bottom-0">
+                                      <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+                                          <li class="nav-item">
+                                              <a class="nav-link active" id="custom-tabs-four-home-tab"
+                                                  data-toggle="pill" href="#custom-tabs-four-home" role="tab"
+                                                  aria-controls="custom-tabs-four-home"
+                                                  aria-selected="true" onclick="tab2()">Customer</a>
+                                          </li>
+                                          <li class="nav-item">
+                                              <a class="nav-link" id="custom-tabs-four-profile-tab"
+                                                  data-toggle="pill" href="#custom-tabs-four-profile" role="tab"
+                                                  aria-controls="custom-tabs-four-profile"
+                                                  aria-selected="false" onclick="tab3()">Address</a>
+                                          </li>
+                                      </ul>
+                                  </div>
+                                  <!-- header -->
+                                  <div class="card-body">
+                                    <div class="tab-content" id="custom-tabs-four-tabContent">
+                                        <div class="tab-pane fade show active" id="custom-tabs-four-home"
+                                            role="tabpanel" aria-labelledby="custom-tabs-four-home-tab" onclick="tab2()">
+                                            {% for i in customerData %}
+                                            <div class="card-body">
+                                              <div class="row">
+                                                <div class="col-sm-6">
+                                                  <input type="hidden" name="customerId" id="customerId" value="{{i.customerId}}">
+                                                  <div class="form-group">
+                                                    <label for="firstName">First Name:</label>
+                                                    <input type="text" class="form-control" id="firstName" name="firstName"  value="{{i.firstName}}">
+                                                  </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="lastName">Last Name:</label>
+                                                    <input type="text" class="form-control" id="lastName" name="lastName" value="{{i.lastName}}">
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="form-group">
+                                                {% if prod.image %}
+                                                  <img src="{{prod.image.url}}" id="imgPreview" alt="image" height="50px" width="50px">
+                                                {% endif %}
+                                                <br>
+                                                <label for="image">Profile Image:</label>
+                                                <input type="file"  class="form-control" id="image" name="image">
+                                              </div>
+                                              <div class="callout callout-warning">
+                                                <strong>Note</strong>
+                                                <li>Maximum size : 2 MB</li>
+                                                <li>Allowed file type : jpeg, jpg, png</li>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="email">Email:</label>
+                                                    <input type="email" class="form-control" id="email" name="email" value="{{i.email}}">
+                                                  </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="contactNo">Contact:</label>
+                                                    <input type="number" class="form-control" id="contactNo" name="contactNo" value="{{i.contactNo}}">
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="password">Password:</label>
+                                                    <input type="password" class="form-control" id="password" name="password" onkeyup='check();'>
+                                                    <div id="password-strength-status"></div> 
+                                                  </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                  <div class="form-group">
+                                                    <label for="confirmPassword">Confirm Password:</label>
+                                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" onkeyup='check();' >
+                                                    <div id='message'></div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="row">
+                                                <div class="col-sm-3">
+                                                  <div class="form-group">
+                                                    <label for="emailVerified">Email Verified:</label><br>
+                                                    <input type="radio"  id="emailVerified" name="emailVerified" {% if i.emailVerified %} checked {% endif %} onclick="addTotargetGroup('user',this);" style="width: 20px;height: 20px;color: #495057;background-color: #fff;background-clip: padding-box;border: 1px solid #ced4da;border-radius: 0.25rem;box-shadow: inset 0 0 0 transparent;transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;">
+                                                    <input type="hidden" name="updateTime" id="updateTime" value="">
+                                                  </div>
+                                                </div>
+                                                <!-- <div class="col-sm-3">
+                                                  <div class="form-group">
+                                                    <label for="emailVerifiedDate">Email Verified Date:</label>
+                                                    <input type="text" class="form-control" id="emailVerifiedDate" name="emailVerifiedDate" readonly style="background-color: white;">
+                                                  </div>
+                                                </div> -->
+                                                <div class="col-sm-3">
+                                                  <div class="form-group">
+                                                    <label for="customerGroup">Customer Group:</label>
+                                                    <select name="group" id="group" class="form-control">
+                                                      {% if i.group is not none %}
+                                                      <option value="{{i.group_id}}" selected>{{i.group}}</option>
+                                                      {% endif %}
+                                                      {% for j in customerGroupData %}
+                                                      {% if i.group != j %}
+                                                      <option value="{{j.customerGroupId}}">{{j}}</option>
+                                                      {% endif %}
+                                                      {% endfor %}
+                                                    </select>
+                                                  </div>
+                                                </div>
+                                                <div class="col-sm-6">  
+                                                  <div class="form-group">
+                                                    <label for="status">Status:</label>
+                                                    <select name="status" id="status" class="form-control">
+                                                      <option value="enabled"{% if i.status == "enabled" %} selected {% endif %}>Enabled</option>
+                                                      <option value="disabled" {% if i.status == "disabled" %} selected {% endif %}>Disabled</option>
+                                                    </select>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            {% endfor %}
+                                            <!-- card body -->
+                                        </div>
+                                        <!-- customertab -->
+                                        <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel"
+                                                    aria-labelledby="custom-tabs-four-profile-tab" onclick="tab3()">
+                                                    <div class="card-body">
+                                                      
+                                                      <div class="row">
+                                                        <div class="col-sm-12">
+                                                          <img id="addData" src="{% static 'images/add-button.png' %}" height="30px" width="30px" style="float: right;">
+                                                        </div>
+                                                      </div>
+                                                      <div class="card-body" id="optiontable">
+                                              
+                                                        <div id="oprioncount[{{forloop.counter0}}]">
+                                                          <div class="row">
+                                                            <div class="col-sm-6">
+                                                              <div class="form-group">
+                                                                <input type="hidden" name="option[{{forloop.counter0}}][addressId]" id="addressId">
+                                                                <label for="name">Address Type(Home/Office):</label>
+                                                                <input type="text" class="form-control" id="name" name="option[{{forloop.counter0}}][name]" >
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                              <div class="form-group">
+                                                                <label for="houseNo">House No./ Building / Appartment:</label>
+                                                                <input type="text" class="form-control" id="houseNo" name="option[{{forloop.counter0}}][houseNo]" >
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="row">
+                                                            <div class="col-sm-12">
+                                                              <div class="form-group">
+                                                                <label for="streetAddress">Area / Street / Sector / Village:</label>
+                                                                <input type="text" class="form-control" id="streetAddress" name="option[{{forloop.counter0}}][streetAddress]">
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="row">
+                                                            <div class="col-sm-6">
+                                                              <div class="form-group">
+                                                                <label for="landmark">Landmark:</label>
+                                                                <input type="text" class="form-control" id="landmark" name="option[{{forloop.counter0}}][landmark]">
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                              <div class="form-group">
+                                                                <label for="postalCode">Pincode:</label>
+                                                                <input type="number" class="form-control" id="postalCode" name="option[{{forloop.counter0}}][postalCode]">
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="row">
+                                                            <div class="col-sm-6">
+                                                              <div class="form-group">
+                                                                <label for="isDefault">Default:</label>
+                                                                <input type="radio" class="radioUpdate" id="isDefault" name="option[{{forloop.counter0}}][isDefault]" >
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                              <input type="button" class="deleteAddress"  value="Delete" style="background-color: #dc3545;border:none;color:white;border-radius:5%;float: right;">
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <!-- option row -->
+                                                        
+                                                    </div>
+                                                    
+                                                        <!-- option table -->
+                                                    </div>
+                                        </div>
+                                  </div>
+                                  </div>
+                              <!-- card body -->
+                              </div>
+                              <!-- card primary -->
+                          </div>
+                          <!-- card body -->
+                      </div>
+                      <!-- row -->
+                  </div>
+                  <!-- col -->
+                </div>
+                <!-- row -->
+          </div>
+          <!-- fluid -->
+        </section>
+        <div id="submitdiv">
+          {% submit_row %}
+        </div>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  <div class="wrapper">
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="row" id="addressCard">
+            {% for i in addressData %}
+              
+              <div class="col-sm-3" >
+                <div class="card card-primary" >
+                  <div class="card-header" style="background-color: #6c757d;" id="addressCardHeader">
+                      <h5 style="text-transform: capitalize;text-align: center;margin: 0px;">{{i.name}}</h5>
+                  </div>
+                  <div class="card-body" id="addressCardBody"> 
+                    <div class="row">
+                      <h5 style="text-transform: capitalize;text-align: center;margin-left: auto;margin-right: auto;">{{i.houseNo}}</h5>
+                    </div>
+                    <div class="row">
+                      <h5 style="text-transform: capitalize;text-align: center;margin-left: auto;margin-right: auto;">{{i.streetAddress}}</h5>
+                    </div>
+                    <div class="row">
+                      <h5 style="text-transform: capitalize;text-align: center;margin-left: auto;margin-right: auto;">{{i.postalCode}}</h5>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6" style="text-align: center;">
+                        <input type="button" id="{{i.addressId}}" class="btn btn-outline-success" name="update"  value="Update">
+                      </div>
+                      <div class="col-sm-6" style="text-align: center;" id="{{i.addressId}}">
+                        <input type="button"  class="btn btn-outline-danger" name="delete" id="deleteAddress" value="Delete">
+                      </div>
+                    </div> 
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+      </section>
+      </div>
+      </div>
+</body>
+{% endblock %}

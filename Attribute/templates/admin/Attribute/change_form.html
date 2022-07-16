@@ -1,0 +1,294 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% load i18n admin_urls static admin_modify %}
+{% block extrahead %}
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                  {% if not is_popup %}
+                  {% block breadcrumbs %}
+                  <div class="breadcrumbs">
+                  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+                  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+                  &rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+                  &rsaquo; {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+                  </div>
+                  {% endblock %}
+                  {% endif %}
+              </ol>
+            </div>
+            
+          </div>
+          <div class="row mb-2">
+              <div class="col-sm-12">
+                  {% block object-tools %}
+                  {% if change %}{% if not is_popup %}
+                  <ul class="object-tools" style="float: right;">
+                      {% block object-tools-items %}
+                      {% change_form_object_tools %}
+                      {% endblock %}
+                  </ul>
+                  {% endif %}{% endif %}
+                  {% endblock %}
+              </div>
+          </div>
+          <div class="row mb-2">
+              <div class="col-sm-12">
+                  <div class="card card-primary">
+                      <div class="card-header">
+                        <h3 class="card-title">{% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}</h3>
+                      </div>
+                      <div class="card-body">
+                        <!-- if attribute and options both are none then open add form -->
+                        {% if attributeNames is None and optionNames is None %}
+                        <div class="tabs" id="attributediv">
+                          <ul>
+                            <li><a href="#information">Attribute</a></li>
+                          </ul>
+                          <div id="information">
+                            <!-- attribute form start -->
+                            <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate >{% csrf_token %}
+                              <table>
+                                {% for i in language %}
+                                <tr>
+                                  Name [{{i.locale}}]
+                                </tr>
+                                  <tr>
+                                    <input type="text" class="form-control" id="{{i.locale}}name" name="{{i.locale}}name" required>
+                                    <input type="hidden" id="{{i.locale}}language" name="{{i.locale}}language" value="{{i.locale}}">
+                                  </tr>
+                                {% endfor %}
+                                <tr>
+                                  Code
+                                </tr>
+                                <tr><input type="text" class="form-control" id="code" name="code" required></tr>
+                                <tr>
+                                  Input Type
+                                </tr>
+                                <tr>
+                                    <select id="inputtype" class="form-control" name="inputtype" required>
+                                      <option value="boolean">Boolean</option>
+                                      <option value="checkbox">Checkbox</option>
+                                      <option value="radio">Radio</option>
+                                      <option value="select">Select</option>
+                                      <option value="multiselect">Multi-select</option>
+                                      <option value="textbox">TextBox</option>
+                                      <option value="textarea">Textarea</option>
+                                    </select>
+                                  </tr>
+                              
+                                <tr>
+                                  Required
+                                </tr>
+                                <tr>
+                                    <select id="required"class="form-control" name="required" required>
+                                      <option value="yes">Yes</option>
+                                      <option value="no">No</option>
+                                    </select></td>
+                                </tr>
+                              </table>
+                              <!-- option table start -->
+                              <div class="tabs" id="optiondiv">
+                                <ul>
+                                  <li><a href="#option">Option</a></li>
+                                  <li id="add" style="position: relative;margin-top:-3px;float:right;right:-5px;top:0px;"><img src="{% static 'images/add-button.png' %}" height="30x" width="30px"></li>
+                                </ul>
+                                <div id="option">
+                                    <table id="tbl">
+                                      <tr>
+                                        {% for i in language %}
+                                          <th>Name [{{i.locale}}]</th>
+                                        {% endfor %}
+                                        <th>Custom Option</th>
+                                        <th>Sort Order</th>
+                                        <th>Default</th>
+                                        <th>Action</th>
+                                      </tr>
+                                      <tr id="option-row[0]">
+                                        {% for i in language %}
+                                          <td>
+                                            <input type="text" class="form-control" id="option{{i.locale}}['0'][opname]" name="option{{i.locale}}['0'][opname]" >
+                                            <input type="hidden" id="option{{i.locale}}['0'][oplanguage]" name="option{{i.locale}}['0'][oplanguage]" value="{{i.locale}}" >
+                                          </td>
+                                        {% endfor %}
+                                        <td><input type="text" class="form-control" id="option['0'][customoption]" name="option['0'][customoption]" ></td>
+                                        <td><input type="number" class="form-control" id="option['0'][order]" name="option['0'][order]" ></td>
+                                        <td><input type="radio" class="radio" id="option['0'][default]" name="option['0'][default]" ></td>
+                                        <td><input type="button" class="delete"   value="Delete" style="background-color: #dc3545;border:none;color:white;border-radius:5%"></td>
+                                      </tr>
+                                    </table>
+                                </div>
+                              </div>
+                              <!-- option table end -->
+                          </div>
+                        </div>
+                          {% csrf_token %}
+                        <div id="submitdiv">
+                          {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+                        </form>
+                        <!-- form end -->
+                        </div>
+
+                        <!-- if attribute and options are not none then open update form -->
+                        {% else %}
+                          <div class="tabs" id="attributediv">
+                            <ul>
+                              <li><a href="#information">Attribute</a></li>
+                            </ul>
+                            <div id="information">
+                              <!-- attribut form start -->
+                              <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+                                <table>
+                                  
+                                  {% for i in language %}
+                                  {% if i.locale == attributeNames|get_item:i.locale|get_item:'language' %}
+                                  <tr>
+                                    Name [{{i.locale}}]
+                                    <tr>
+                                      <input type="hidden" id="{{i.locale}}attributetranslationid" name="{{i.locale}}attributetranslationid" value="{{attributeNames|get_item:i.locale|get_item:'attributeTranslationId'}}">
+                                      <input type="text" class="form-control" id="{{i.locale}}name" name="{{i.locale}}name" value="{{attributeNames|get_item:i.locale|get_item:'name'}}"  required>
+                                      <input type="hidden" id="{{i.locale}}language" name="{{i.locale}}language" value="{{i.locale}}">
+                                    </tr>
+                                  
+                                  {% endif %}
+                                  {% endfor %}
+                                  <tr>
+                                    {% for i in attributeDetails %}
+                                    Code
+                                  </tr>
+                                    <tr><input type="text" class="form-control" id="code" name="code" value="{{i.code}}" required></tr>
+                                    <input type="hidden" id="attributeid" name="attributeid" value="{{i.attributeId}}" required>
+                                  
+                                  <tr>
+                                    Input Type
+                                  </tr>
+                                  <tr>
+                                      <select id="inputtype" name="inputtype" class="form-control" required>
+                                        <option value="boolean" {% if i.inputType == "boolean" %} selected {% endif %}>Boolean</option>
+                                        <option value="checkbox" {% if i.inputType == "checkbox" %} selected {% endif %}>Checkbox</option>
+                                        <option value="radio" {% if i.inputType == "radio" %} selected {% endif %}>Radio</option>
+                                        <option value="select"{% if i.inputType == "select" %} selected {% endif %}>Select</option>
+                                        <option value="multiselect" {% if i.inputType == "multiselect" %} selected {% endif %}>Multi-select</option>
+                                        <option value="textbox" {% if i.inputType == "textbox" %} selected {% endif %}>TextBox</option>
+                                        <option value="textarea" {% if i.inputType == "textarea" %} selected {% endif %}>Textarea</option>
+                                      </select>
+                                    </tr>
+                                  
+                                  <tr>
+                                    Required
+                                  </tr>
+                                  <tr>
+                                      <select id="required" name="required" class="form-control" required>
+                                        <option value="yes" {% if i.isRequired == "yes" %} selected {% endif %}>Yes</option>
+                                        <option value="no" {% if i.isRequired == "no" %} selected {% endif %}>No</option>
+                                      </select>
+                                  </tr>
+                                  <tr>
+                                    <input type="hidden" name="updateddate" id="updateDateTime" value="">
+                                  </tr>
+                                  {% endfor %}
+                                </table>
+                              <!-- option div starts -->
+                              <div class="tabs" id="optiondiv">
+                                <ul>
+                                  <li><a href="#option">Option</a></li>
+                                  <li id="add" style="position: relative;margin-top:-3px;float:right;right:-5px;top:0px;"><img src="{% static 'images/add-button.png' %}" height="30x" width="30px"></li>
+
+                                </ul>
+                                <div id="option">
+                                  
+                                    
+                                    <table id="tbl">
+                                      <tr>
+                                        
+                                        {% for i in language %}
+                                          <th>Name [{{i.locale}}]</th>
+                                        {% endfor %}
+                                        <th>Custom Option</th>
+                                        <th>Sort Order</th>
+                                        <th>Default</th>
+                                        <th>Action</th>
+                                      </tr>
+                                      
+                                        {% for i in optionDetails %}
+                                        <tr id="option-row[{{forloop.counter0}}]">
+                                          {% for j in language %}
+                                            {% if j.locale == optionNames|get_item:j.locale|get_item:i.customOption|get_item:'language' %}
+                                            
+                                            
+                                            
+                                              <input type="hidden" id="option{{j.locale}}['{{forloop.parentloop.counter0}}'][optiontranslationid]" name="option{{j.locale}}['{{forloop.parentloop.counter0}}'][optiontranslationid]" value="{{optionNames|get_item:j.locale|get_item:i.customOption|get_item:'optionTranslationId'}}"required>
+                              
+                                              <td><input type="text" class="form-control" id="option{{j.locale}}['{{forloop.parentloop.counter0}}'][opname]" name="option{{j.locale}}['{{forloop.parentloop.counter0}}'][opname]" value="{{optionNames|get_item:j.locale|get_item:i.customOption|get_item:'name'}}" required ></td>
+                                              <input type="hidden" id="option{{j.locale}}['{{forloop.parentloop.counter0}}'][oplanguage]" name="option{{j.locale}}['{{forloop.parentloop.counter0}}'][oplanguage]" value="{{j.locale}}" required>
+                                            
+                                            {% endif %}
+                                          {% endfor %}
+                                          
+                                        
+                                        
+                                        <td><input type="text"  class="form-control" id="option[{{forloop.counter0}}][customoption]" name="option[{{forloop.counter0}}][customoption]" value="{{i.customOption}}" required></td>
+
+                                        <input type="hidden" id="option[{{forloop.counter0}}][optionid]" name="option[{{forloop.counter0}}][optionid]" value="{{i.optionId}}" required>
+                                        
+                                        <td><input type="number" class="form-control" id="option[{{forloop.counter0}}][order]" name="option[{{forloop.counter0}}][order]" value="{{i.sortOrder}}" required></td>
+                                        
+                                        <td><input type="radio"  class="radio" id="option[{{forloop.counter0}}][default]" name="option[{{forloop.counter0}}][default]"  {% if i.isDefault == True %} checked {% endif %} ></td>
+                                        <td id="{{i.optionId}}"><input type="button" class="delete" value="Delete" style="background-color: #dc3545;border:none;color:white;border-radius:5%">
+                                        </td>
+                                      </tr>
+                                        {% endfor %}
+                                        
+                                        
+                                    </table>
+                                </div>
+                                
+                              </div>
+                              <!-- option div end -->
+                          </div>
+                          
+                        </div>
+
+                          {% csrf_token %}
+                        <div id="submitdiv">
+                          {% submit_row %}
+                        </div>
+                        </form>
+                        <!-- form end -->
+                        {% endif %}
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+        
+          
+        
+        
+      </body>
+  
+<!-- Render the rest of the ChangeList view -->
+<!-- {{block.super}} -->
+{% endblock %}

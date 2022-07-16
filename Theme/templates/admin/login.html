@@ -1,0 +1,85 @@
+{% load i18n static %}
+
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<!-- <link rel="stylesheet" href="{% static '/css/all.min.css' %}"> -->
+<!-- icheck bootstrap -->
+<link rel="stylesheet" href="{% static '/css/icheck-bootstrap.min.css' %}">
+<!-- Theme style -->
+<link rel="stylesheet" href="{% static '/css/adminlte.min.css' %}">
+<!-- placeholder icon style -->
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+<!-- custom style -->
+<link rel="stylesheet" href="{% static '/css/custom.css' %}">
+
+{% block content %}
+{% if form.errors and not form.non_field_errors %}
+<p class="errornote">
+{% if form.errors.items|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
+</p>
+{% endif %}
+
+{% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+
+
+<body class="hold-transition login-page">
+  <div class="login-box">
+    <!-- /.login-logo -->
+    <div class="card card-outline card-primary">
+      <div class="card-header text-center">
+        <a class="h1"><b>Admin</b>LTE</a>
+      </div>
+      <div class="card-body">
+        <p class="login-box-msg">Sign in to start your session</p>
+  
+        <form  method="post">
+          {% csrf_token %}
+          <div class="input-group h-100 d-flex align-items-center justify-content-center mb-3 ">
+            {{ form.username }}
+             
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <i class='fa fa-envelope'></i>
+              </div>
+            </div>
+          </div>
+          <div class="input-grouph-100 d-flex align-items-center justify-content-center mb-3">
+            {{ form.password }}
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <i class='fa fa-lock'></i>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <!-- /.col -->
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary btn-block">Log In</button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </form>
+
+      </div>
+      <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+  </div>
+  <!-- /.login-box -->
+  
+    
+  <!-- jQuery -->
+  <script src="{% static '/js/jquery.min.js' %}"></script>
+  <!-- Bootstrap 4 -->
+  <script src="{% static '/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- AdminLTE App -->
+  <script src="{% static '/js/adminlte.min.js' %}"></script>
+</body>
+{% endblock %}

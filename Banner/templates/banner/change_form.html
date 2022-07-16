@@ -1,0 +1,277 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% load static %}
+{% block extrahead %}
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  .error{
+    color: red;
+  }
+    table{
+      width: 100%;
+      color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                  {% if not is_popup %}
+                  {% block breadcrumbs %}
+                  <div class="breadcrumbs">
+                  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+                  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+                  &rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+                  &rsaquo; {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+                  </div>
+                  {% endblock %}
+                  {% endif %}
+              </ol>
+            </div>
+            
+          </div>
+          
+          <div class="row mb-2">
+              <div class="col-sm-12">
+                  <div class="card card-primary">
+                      <div class="card-header">
+                        <h3 class="card-title">{% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}</h3>
+                      </div>
+                      <div class="card-body">
+                        {% if bannerList is None %}
+
+
+                  <div class="tabs">
+                    <ul>
+                      
+                      <li><a href="#translation">Translation</a></li>
+                      <li><a href="#banner">Banner</a></li>
+                    </ul>
+                    <form class="form-group" id="addbanner" method="post" enctype="multipart/form-data">
+                    <div id="translation">
+                      <div class="tabs">
+                        <ul>{% for i in language %}
+                          <li><a href="#{{i.locale}}">{{i.title}}</a></li>
+                          {% endfor %}
+                        </ul>
+
+                        {% for i in language %}
+                        <div id="{{i.locale}}">
+
+                          <div class="form-group">
+                            <label>Title:</label>
+                            <input class="form-control" type="text" id="{{i.locale}}title" name="{{i.locale}}title" required /></td>
+                          </div>
+                          <div class="form-group">
+                            <label>Content:</label>
+                              <textarea class="form-control" rows="5" cols="40" id='{{i.locale}}content' name="{{i.locale}}content"
+                                required></textarea>
+                          </div>
+                            <input class="form-control" type="hidden" id="{{i.locale}}lang" name="{{i.locale}}lang" value="{{i.locale}}" />
+
+                            
+                         
+
+                        </div>
+                        {% endfor %}
+
+
+
+                      </div>
+                    </div>
+                    <div id="banner">
+                      
+                      <div class="form-group">
+                        <label>Banner Group:</label>
+                            <select style="width: 200px;" data-placeholder="Select Banner Groups" multiple class="chosen-select form-control" tabindex="8" id="bannergroup" name="bannergroup">
+                              
+                              {% for i in bannerGroup %}
+                              <option value="{{i.bannerGroupId}}" >
+                                {{i.code}}</option>
+                              {% endfor %}
+                              </select>
+                    
+                      </div>
+                            
+                          
+                          
+                           
+                      <div class="form-group">
+                        <label>Sort Order:</label>
+                            <input class="form-control" type="number" id="order" name="order">
+                      </div>
+
+                      <div class="form-group">
+                        <label>Status:</label>
+                          
+                            <select class="form-control" id="status" name="status" required>
+                              <option value="enabled">Enable</option>
+                              <option value="disabled">Disable</option>
+                            </select>
+                      </div>
+                      <div class="m-3">
+                        <table width="100%" class="text-center" id="bannerinfo">
+                          <tr>
+                          <th>Banner Group</th>
+                          <th>Image</th>
+                          <th>URL</th>
+                          </tr>
+                        </table>
+                      </div>
+                    </div>
+                    
+                  </div>
+                  {% csrf_token %}
+                  {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+                  </form>
+                  {% else %}
+
+
+                  <div class="tabs">
+                    <ul>
+                      
+                      <li><a href="#translation">Translation</a></li>
+                      <li><a href="#banner">Banner</a></li>
+                    </ul>
+                    <form class="form-group" method="post" id="updatebanner" enctype="multipart/form-data">
+                    <div id="translation">
+                      <div class="tabs">
+                        <ul>{% for i in language %}
+                          <li><a href="#{{i.locale}}">{{i.title}}</a></li>
+                          {% endfor %}
+                        </ul>
+
+                        {% for i in language %}
+                        {% if i.locale == bannerList|get_item:i.locale|get_item:'language' %}
+
+                        <div id="{{i.locale}}">
+
+                          <div class="form-group">
+                            <label>Title:</label>
+                            <input class="form-control" type="text" id="{{i.locale}}title" name="{{i.locale}}title" value="{{bannerList|get_item:i.locale|get_item:'title'}}" required />
+                          </div>
+                          <div class="form-group">
+                            <label>Content:</label>
+                              <textarea class="form-control" rows="5" cols="40" id='{{i.locale}}content' name="{{i.locale}}content"
+                                required>{{bannerList|get_item:i.locale|get_item:'content'}}</textarea>
+                          </div>
+                            <input class="form-control" type="hidden" id="{{i.locale}}lang" name="{{i.locale}}lang" value="{{i.locale}}" />
+                            <input class="form-control" type="hidden" id="{{i.locale}}bannertranslationid" name="{{i.locale}}bannertranslationid" value="{{bannerList|get_item:i.locale|get_item:'bannerTranslationId'}}" />
+
+
+                            
+                          
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+
+
+
+                      </div>
+                    </div>
+                    <div id="banner">
+                      
+                      <div class="form-group">
+                        <label>Banner Group:</label>
+                            <select style="width: 200px;" data-placeholder="Select Banner Groups" multiple class="chosen-select form-control" tabindex="8" id="bannergroup" name="bannergroup">
+                              
+                              {% for i in bannerGroup %}
+                              
+                              <option value="{{i.bannerGroupId}}" {% for j in bannerImageList %}{% if j.bannerGroup_id == i.bannerGroupId %} selected {% endif %} {% endfor %}>
+                                {{i.code}}</option>
+                              
+                              {% endfor %}
+                              </select>
+                    
+                      </div>
+                            
+                          
+                          
+                          {% for i in bannerDetails %}
+                          <div class="form-group">
+                            <label>Sort Order:</label>
+                            <input class="form-control" type="number" id="order" name="order" value="{{i.sortOrder}}">
+                          </div>
+                          <input class="form-control" type="hidden" id="bannerid" name="bannerid" value="{{i.bannerId}}">
+
+                          <div class="form-group">
+                            <label>Status:</label>
+                          
+                            <select class="form-control" id="status" name="status" required>
+                              <option value="enabled" {% if i.status == "enabled" %} selected {% endif %} >Enable</option>
+                              <option value="disabled" {% if i.status == "disabled" %} selected {% endif %}>Disable</option>
+                            </select>
+                          </div>
+                          {% endfor %}
+                        
+                        <div class="m-3">
+                        <table width="100%" class="text-center" id="bannerinfo">
+                          <tr>
+                          <th>Banner Group</th>
+                          <th>Image</th>
+                          <th>URL</th>
+                          </tr>
+
+                          {% for j in bannerImageList %}
+                          <tr class="added-{{j.bannerGroup_id}}">
+                            <td>{{j.bannerGroup.code}}</th>
+                            <td><div class=row><a id="imglink[{{j.bannerGroup_id}}]" class="col-md-2" href="/media/{{j.image}}" target="_blank"><img id="img[{{j.bannerGroup_id}}]" src ="/media/{{j.image}}" style="height:50px; width:50px;"></a>
+                              <input type="file" class="form-control col-md-8 mt-2" id="bannerimage[{{j.bannerGroup_id}}]" name="bannerimage[{{j.bannerGroup_id}}]" onchange="readURL(this);"  accept="image/*" >
+                            </div></td>
+                            <td><input type="url" class="form-control" id="url[{{j.bannerGroup_id}}]" name="url[{{j.bannerGroup_id}}]" value="{{j.url}}"></td>
+                            <input type="hidden"  id="bannergrpid[{{j.bannerGroup_id}}]" name="bannergrpid[{{j.bannerGroup_id}}]" value="{{j.bannerGroup_id}}" required>
+                            <input type="hidden"  id="bannerimgid[{{j.bannerGroup_id}}]" name="bannerimgid[{{j.bannerGroup_id}}]" value="{{j.bannerImageId}}" required>
+                            </tr>
+                          {% endfor %}
+                        </table>
+                        </div>
+                    </div>
+                    
+                  </div>
+                  {% csrf_token %}
+                  {% submit_row %}
+                  </form>
+
+                  {% endif %}
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+        </section>
+        </div>
+      </div>
+        <script>
+           function readURL(input) {
+              if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                console.log("img: ",$(this));
+                reader.onload = function (e) {
+                  console.log(e.target);
+                  forImg.attr('src', e.target.result).width(50).height(50);
+                  $(e.target).prev().$('a').prop('href', e.target.result).prop('target','_blank');
+                };
+
+                reader.readAsDataURL(input.files[0]);
+              }
+            }
+        </script>
+    </body>
+ 
+{% endblock %}

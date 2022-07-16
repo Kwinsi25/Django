@@ -1,0 +1,24 @@
+.os-content{
+    height: auto !important;
+    background-color: white !important;
+    color: black !important;
+    width: 100% !important;
+}
+
+[class*=sidebar-dark-] .sidebar a {
+    color: black !important;
+}
+aside{
+    background-color: white !important;
+    color: #4b545c !important;
+}
+.search{
+    background-color: white !important;
+    color: black !important;
+}
+.navbar-white {
+    background-color: #4b545c !important;
+}
+.nav-sidebar{
+    background-color: white !important;
+} 

@@ -1,0 +1,191 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% load static %}
+{% block extrahead %}
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+    table{
+      width: 100%;
+      color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                  {% if not is_popup %}
+                  {% block breadcrumbs %}
+                  <div class="breadcrumbs">
+                  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+                  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+                  &rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+                  &rsaquo; {% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+                  </div>
+                  {% endblock %}
+                  {% endif %}
+              </ol>
+            </div>
+            
+          </div>
+          
+          <div class="row mb-2">
+              <div class="col-sm-12">
+                  <div class="card card-primary">
+                      <div class="card-header">
+                        <h3 class="card-title">{% if add %}{% blocktranslate with name=opts.verbose_name %}Add {{ name }}{% endblocktranslate %}{% else %}{{ original|truncatewords:"18" }}{% endif %}</h3>
+                      </div>
+                      <div class="card-body">
+                        {% if pageList is None %}
+                        <div class="tabs">
+                          <ul>
+                            <li><a href="#page">Page</a></li>
+                            <li><a href="#translation">Translation</a></li>
+                          </ul>
+                          <!-- page div start -->
+                          <div id="page">
+                            <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate >{% csrf_token %}
+                              <table>
+                                <tr>Slug</tr>
+                                <tr><input type="text" class="form-control" id="slug" name="slug"  required></tr>
+                                <tr>Status</tr>
+                                <tr>
+                                  <select id="status" class="form-control" name="status" required>
+                                    <option value="enabled">Enable</option>
+                                    <option value="disabled">Disable</option>
+                                  </select>
+                                </tr>
+                                  
+                                <tr>Sort Order</tr>
+                                <tr><input type="number" class="form-control" id="order" name="order"></tr>
+                                
+                              </table>
+                          </div>
+                          <!-- page div end -->
+                          <!-- page translation start -->
+                          <div id="translation">
+                            <div class="tabs">
+                              <ul>{% for i in language %}
+                                <li><a href="#{{i.locale}}">{{i.title}}</a></li>
+                                {% endfor %}
+                              </ul>
+                              
+                              {% for i in language %}
+                              <div id="{{i.locale}}">
+                                
+                                <table>
+                                  <tr>Title:</tr>
+                                  <tr><input type="text" class="form-control" id="{{i.locale}}title" name="{{i.locale}}title" required/></tr>
+                                  
+                                  <tr>Content:</tr>
+                                  <tr>
+                                    <textarea class="form-control" rows="5" cols="40" id='{{i.locale}}content' name="{{i.locale}}content" required></textarea>
+                                    <input type="hidden" id="{{i.locale}}lang" name="{{i.locale}}lang" value="{{i.locale}}"/>
+                                    
+                                  </tr>
+                                  
+                                </table>
+                                  
+                              </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                          <!-- page translation end -->
+                        </div>
+                          {% csrf_token %}
+                          {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+                        </form>
+                        {% else %}
+                          <div class="tabs">
+                            <ul>
+                              <li><a href="#page">Page</a></li>
+                              <li><a href="#translation">Translation</a></li>
+                            </ul>
+                            <!-- page div start -->
+                            <div id="page">
+                              <form method="post">
+                                {% for i in pageDetails %}
+                                <table>
+                                  <tr>Slug</tr>
+                                  <tr><input type="text"class="form-control" id="slug" name="slug" value="{{i.slug}}" required></tr>
+                                  
+                                  <tr>Status</tr><tr>
+                                    <select id="status" class="form-control" name="status" required>
+                                      <option value="enabled"  {% if i.status == "enabled" %} selected {% endif %}>Enable</option>
+                                      <option value="disabled" {% if i.status == "disabled" %} selected {% endif %}>Disable</option>
+                                    </select></tr>
+                                    
+                                  <tr>Sort Order</tr>
+                                  <tr><input type="number" class="form-control" id="order" name="order" value="{{i.sortOrder}}"></tr>
+                                  
+                                </table>
+                                {% endfor %}
+                            </div>
+                            <!-- page div end -->
+                            <!-- page translation div start -->
+                            <div id="translation">
+                              <div class="tabs">
+                                <ul>{% for i in language %}
+                                  <li><a href="#{{i.locale}}">{{i.title}}</a></li>
+                                  {% endfor %}
+                                </ul>
+                                
+                                {% for i in language %}
+                                {% if i.locale == pageList|get_item:i.locale|get_item:'language' %}
+                                
+                                <div id="{{i.locale}}">
+                                  
+                                  <table>
+                                    <tr>Title:</tr>
+                                    <tr><input type="text"  class="form-control"id="{{i.locale}}title" name="{{i.locale}}title" value="{{pageList|get_item:i.locale|get_item:'title'}}" required/></tr>
+                                    
+                                    <tr>Content:</tr>
+                                    <tr>
+                                      <textarea class="form-control" rows="5" cols="40" id='{{i.locale}}content' name="{{i.locale}}content"  required>{{pageList|get_item:i.locale|get_item:'content'}}</textarea>
+                                      <input type="hidden" id="{{i.locale}}lang" name="{{i.locale}}lang" value="{{pageList|get_item:i.locale|get_item:'language'}}"/>
+                                      <input type="hidden" id="{{i.locale}}contentId" name="{{i.locale}}contentId" value="{{pageList|get_item:i.locale|get_item:'contentId'}}"/>
+                                    </tr>
+                                    
+                                  </table>
+                                    
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                
+                                
+                              </div>
+                            </div>
+                            <!-- page translation div end -->
+                          </div>
+                          {% csrf_token %}
+                          {% submit_row %}
+                          </form>
+                      
+                        {% endif %}
+                      
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+        </section>
+        </div>
+      </div>
+    </body>
+ 
+{% endblock %}

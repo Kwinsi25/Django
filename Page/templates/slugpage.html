@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    {% for i in page %}
+  <title>{{i.title}} | Covid-19 HMS</title>
+  {% endfor %}
+<link href="{% static 'css/style1.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">  
+<style>
+    .float-end a i{
+      font-size: 40px;
+      color:rgb(0, 0, 0);
+      padding-left: 0px;
+    }
+    .float-end a i:hover{
+      color:blueviolet;
+      transform: scale(1.3);
+    }
+    
+</style>
+</head>
+
+    
+    {% include 'header.html' %}
+
+    
+<body>
+<div class="container" id="main">
+    
+    
+    <center><h1></h1></center>  <br><br>                          
+    <div></div>
+    <br>
+    
+    
+    <p class="float-end" style="text-align: right;"><br><a href="#"><i class="fa fa-arrow-circle-up"></i></a></p>
+    
+</div>
+    {% include 'footer.html'%}
+    
+<script>
+// {% for i in page %}
+//         // console.log('{{i.language}}')
+//         $("#container1 nav a .relative").map(function(){
+//     $(this).attr('href','/{{i.page}}');
+//     $(this).html('{{i.title}}');
+// });
+//     {% endfor %}
+
+
+// {% for i in languages %}
+//     {% if i.isDefault %}
+   
+//     $.session.set('language',"{{i.locale}}");
+
+    
+//     {% endif %}
+//     {% endfor %}
+    
+
+    
+    $(window).load(function() {
+
+        var default_language = "{{languageSession}}";
+    console.log(default_language)
+    var options = $('#language option');
+
+    var values = $.map(options ,function(option) {
+        return option.value;
+    });
+    console.log(values)
+    for (i in values){
+        
+        if(values[i]==default_language){
+            
+            $("#language option[value='"+values[i]+"']").attr("selected","selected");
+            
+        }
+    }
+    
+        var selected_language_code = default_language;
+
+
+        {% for i in page %}
+            
+            
+            if ('{{i.locale}}' == selected_language_code){
+                console.log("title :"+'{{i.title}}')
+                
+                $('#main center h1').html('{{i.title}}');
+                $('#main div').html('{{i.content|safe}}');
+            }
+
+        {% endfor %}
+        
+        var pageTitles = [];
+
+        {% for i in pageData %}
+            
+            
+            if ('{{i.locale}}' == selected_language_code){
+                pageTitles.push("{{i.title}}");
+                console.log("page title :"+ pageTitles);
+                // for (j = 0; j < {{pageData|length}}; j++){
+                    
+                    $('#footerLink h6 a').html('{{i.title}}');
+                
+                // }
+            }
+            $('#headerLink nav').each(function(){
+                for(i=0;i<pageTitles.length;i++){
+                        if($('a').is(':empty')){
+                            $('a').html(pageTitles[i]);
+                            
+                        }
+                    }
+                    });
+
+        {% endfor %}
+        
+});
+
+
+$('#language').change(function() {
+    
+            
+    var selected_language_code = $('#language option:selected').val();
+    
+    // $.session.set('language',selected_language_code);
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    console.log(csrftoken)
+    console.log("selected:"+selected_language_code)
+    $.ajax({
+        type: 'POST',
+        headers: {'X-CSRFToken': csrftoken},
+        url: "",
+        data: {'lang': selected_language_code}, 
+          
+        success: function (response) {
+            location.reload();
+        },
+        cache: false,
+      });
+
+
+    
+});
+</script>
+</body>
+</html>

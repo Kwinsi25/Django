@@ -1,0 +1,6 @@
+{% load i18n %}
+{% load static %}
+
+<nav class="sticky" id="nav-sidebar" style="background-color: white;">
+  {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
+</nav>

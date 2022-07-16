@@ -1,0 +1,39 @@
+{% load i18n admin_urls %}
+<div class="submit-row">
+{% block submit-row %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                {% if show_delete_link and original %}
+                    {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
+                    <p class="deletelink-box">
+                        <button class="btn btn-danger"><a href="{% add_preserved_filters delete_url %}" class="deletelink" style="color: white;">{% translate "Delete" %}</a></button>
+                    </p> 
+                {% endif %}
+            </div>
+            <div class="col-sm-6">
+            {% if show_save %}
+            <button id="button" class="btn btn-primary">{% translate 'Save' %}</button>
+            {% endif %}
+            {% if show_save_as_new %}
+                <button class="btn btn-primary">{% translate 'Save as new' %}</button>
+            {% endif %}
+            {% if show_save_and_add_another %}
+                <!-- <input type="submit" value="{% translate 'Save and add another' %}" name="_addanother"> -->
+                <button class="btn btn-primary">{% translate 'Save and add another' %}</button>
+            {% endif %}
+            {% if show_save_and_continue %}
+                <!-- <input type="submit" value="{% if can_change %}{% translate 'Save and continue editing' %}{% else %}{% translate 'Save and view' %}{% endif %}" name="_continue"> -->
+                <button class="btn btn-primary">{% if can_change %}{% translate 'Save and continue editing' %}{% else %}{% translate 'Save and view' %}{% endif %}</button>
+            {% endif %}
+            {% if show_close %}
+                <a href="{% url opts|admin_urlname:'changelist' %}" class="closelink">{% translate 'Close' %}</a>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+</section>
+{% endblock %}
+
+</div>

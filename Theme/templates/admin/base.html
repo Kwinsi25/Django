@@ -7,8 +7,7 @@
   <title>AdminLTE 3 | Dashboard</title>
 
   <!-- Google Font: Source Sans Pro -->
-  <!-- custom -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
   <!-- Font Awesome -->
 <link rel="stylesheet" href="{% static '/css/all.min.css' %}">
 <!-- Ionicons -->
@@ -284,6 +283,63 @@
       },
             
     });
+    $("#configurationForm").validate({
+      rules:{
+        name:{
+          required:true
+        },
+        accessKey:{
+          required:true
+        },
+        group:{
+          required:{
+            depends: function(element) {
+              return $("#group").val() == "";
+            }
+          }
+        },
+        textValue:{
+          required:true
+        },
+        key:{
+          required:true
+        },
+        value:{
+          required:true
+        },
+        sortOrder:{
+          required:true
+        },
+        isDefault:{
+          required:true
+        }
+      },
+      messages:{
+        name:{
+          required:'Please enter name'
+        },
+        accessKey:{
+          required:"Please enter key"
+        },
+        group:{
+          required:"Please select group"
+        },
+        textValue:{
+          required:"Please enter value"
+        }
+      },
+      // errorElement: 'span',
+      // errorPlacement: function (error, element) {
+      //   error.addClass('invalid-feedback');
+      //   element.closest('.form-group').append(error);
+      // },
+      // highlight: function (element, errorClass, validClass) {
+      //   $(element).addClass('is-invalid');
+      // },
+      // unhighlight: function (element, errorClass, validClass) {
+      //   $(element).removeClass('is-invalid');
+      // }
+    })
     $('#customerForm').validate({
       rules:{
         firstName:"required",
@@ -466,6 +522,7 @@
   //         $('#oprion').show();
   //       // tabs
         $(".tabs").tabs();
+        
         // radio button
         $(".radio").change(function() {
           $(".radio").not(this).prop('checked', false);
@@ -582,6 +639,112 @@
             }
             
         })
+        
+        // configurations
+        var count=$('[id^=value-row]').length - 1;
+        $("#addValue").click(function () {
+          count++;
+          if (count<10){
+              var html = `<tr id="value-row[${count}]">
+                <td><input type="text" class="form-control" id="kry" name="value['${count}'][key]" required></td>
+                <td><input type="text" class="form-control" id="value" name="value['${count}'][value]" required></td>
+                <td><input type="number"  class="form-control"id="sortOrder" name="value['${count}'][sortOrder]"></td>
+                <td><input type="radio" class="radio" id="isDefault" name="value['${count}'][isDefault]" ></td>
+                <td><input type="button" class="deleteValue"  value="Delete" style="background-color: #dc3545;border:none;color:white;border-radius:5%"></td>
+              </tr>`;
+              $("#tblValue").append(html);
+          }
+        // delete row
+        $(".deleteValue").click(function(){
+          $(event.target).closest("tr").remove();
+        });
+        $(".radio").change(function() {
+          $(".radio").not(this).prop('checked', false);
+        });  
+      });
+
+        var dltcount=0;
+        $(".deleteValue").click(function(){
+          var dltId = $(this).parent().attr('id');
+          if(dltId != undefined){
+          var dlt = `<input type="hidden" id="deleterows['${dltcount}']" name="deletedata['${dltcount}']" value="${dltId}">`
+          $("#tblValue").append(dlt);
+          }
+          $(event.target).closest("tr").remove();
+          dltcount++;      
+        });
+        var arr = ['select']
+
+        if(jQuery.inArray($("#FieldType").val(),arr) != -1){
+            $("#optiondiv").show()
+            $("#value-row td input").prop('required',true);
+          }
+          else{
+            $("#optiondiv").hide()
+            $("#value-row td input").prop('required',false);
+          }
+
+        $("#FieldType").change(function(){
+          if(jQuery.inArray($("#FieldType").val(),arr) != -1){
+            $("#optiondiv").show()
+            $(".trTextRow").hide()
+            $(".trBooleanRow").hide()
+            $("#value-row td input").prop('required',true);
+          }
+          else{
+            $("#optiondiv").hide()
+            $("#value-row td input").prop('required',false);
+            
+          }
+        }); 
+        
+        var arr1 = ['text']
+
+        if(jQuery.inArray($("#FieldType").val(),arr1) != -1){
+            $(".trTextRow").show()
+            
+            $("#value-row td input").prop('required',true);
+          }
+          else{
+            $(".trTextRow").hide()
+            $("#value-row td input").prop('required',false);
+          }
+
+        $("#FieldType").change(function(){
+          if(jQuery.inArray($("#FieldType").val(),arr1) != -1){
+            $(".trTextRow").show()
+            $("#value-row td input").prop('required',true);
+          }
+          else{
+            $(".trTextRow").hide()
+            $("#value-row td input").prop('required',false);
+            
+          }
+        });
+
+        var arr2 = ['boolean']
+
+        if(jQuery.inArray($("#FieldType").val(),arr2) != -1){
+            $(".trBooleanRow").show()
+            $("#value-row td input").prop('required',true);
+          }
+          else{
+            $(".trBooleanRow").hide()
+            $("#value-row td input").prop('required',false);
+          }
+          
+          $("#FieldType").change(function(){
+            if(jQuery.inArray($("#FieldType").val(),arr2) != -1){
+              $(".trBooleanRow").show()
+              $("#value-row td input").prop('required',true);
+            }
+            else{
+              $(".trBooleanRow").hide()
+              $("#textValue").val('')
+              $("#value-row td input").prop('required',false);
+            
+          }
+        });
        
   });
 </script>

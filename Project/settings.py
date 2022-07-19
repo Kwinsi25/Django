@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'Customer',
     'Language',
     'Page',
-    'Theme'
+    'Theme',
+    'Configurations'
 ]
 
 MIDDLEWARE = [
